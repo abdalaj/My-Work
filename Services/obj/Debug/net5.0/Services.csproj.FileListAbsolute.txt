@@ -1,0 +1,17 @@
+C:\Users\119ab\OneDrive\سطح المكتب\Trtan Demo\App\Services\bin\Debug\net5.0\Services.deps.json
+C:\Users\119ab\OneDrive\سطح المكتب\Trtan Demo\App\Services\bin\Debug\net5.0\Services.dll
+C:\Users\119ab\OneDrive\سطح المكتب\Trtan Demo\App\Services\bin\Debug\net5.0\ref\Services.dll
+C:\Users\119ab\OneDrive\سطح المكتب\Trtan Demo\App\Services\bin\Debug\net5.0\Services.pdb
+C:\Users\119ab\OneDrive\سطح المكتب\Trtan Demo\App\Services\bin\Debug\net5.0\Entites.dll
+C:\Users\119ab\OneDrive\سطح المكتب\Trtan Demo\App\Services\bin\Debug\net5.0\Entites.pdb
+C:\Users\119ab\OneDrive\سطح المكتب\Trtan Demo\App\Services\obj\Debug\net5.0\Services.csproj.AssemblyReference.cache
+C:\Users\119ab\OneDrive\سطح المكتب\Trtan Demo\App\Services\obj\Debug\net5.0\Services.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\119ab\OneDrive\سطح المكتب\Trtan Demo\App\Services\obj\Debug\net5.0\Services.AssemblyInfoInputs.cache
+C:\Users\119ab\OneDrive\سطح المكتب\Trtan Demo\App\Services\obj\Debug\net5.0\Services.AssemblyInfo.cs
+C:\Users\119ab\OneDrive\سطح المكتب\Trtan Demo\App\Services\obj\Debug\net5.0\Services.csproj.CoreCompileInputs.cache
+C:\Users\119ab\OneDrive\سطح المكتب\Trtan Demo\App\Services\obj\Debug\net5.0\Services.csproj.CopyComplete
+C:\Users\119ab\OneDrive\سطح المكتب\Trtan Demo\App\Services\obj\Debug\net5.0\Services.dll
+C:\Users\119ab\OneDrive\سطح المكتب\Trtan Demo\App\Services\obj\Debug\net5.0\ref\Services.dll
+C:\Users\119ab\OneDrive\سطح المكتب\Trtan Demo\App\Services\obj\Debug\net5.0\Services.pdb
+C:\Users\119ab\OneDrive\سطح المكتب\Trtan Demo\App\Services\bin\Debug\net5.0\Interfaces.dll
+C:\Users\119ab\OneDrive\سطح المكتب\Trtan Demo\App\Services\bin\Debug\net5.0\Interfaces.pdb
