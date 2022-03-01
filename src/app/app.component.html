@@ -1,3 +1,233 @@
-<ion-app>
-  <ion-router-outlet></ion-router-outlet>
-</ion-app>
+
+
+<head>
+  <title>الصفحه الرئيسيه</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200&display=swap" rel="stylesheet">
+  <title>Faster Eg</title>
+<style>
+  *{
+    font-family: 'Cairo', sans-serif;
+    box-sizing: border-box;
+  }
+  .body{
+    display: none;
+  }
+  body{
+    background-color: rgba(200, 200, 200, .1);
+    overflow: hidden;
+  }
+  .loader-wrapper {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #242f3f;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999999;
+  }
+  .loader {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    position: relative;
+    border: 4px solid #Fff;
+    animation: loader 2s infinite ease;
+  }
+  .loader-inner {
+    vertical-align: top;
+    display: inline-block;
+    width: 100%;
+    background-color: #fff;
+    animation: loader-inner 2s infinite ease-in;
+  }
+
+  @keyframes loader {
+    0% { transform: rotate(0deg);}
+    25% { transform: rotate(180deg);}
+    50% { transform: rotate(180deg);}
+    75% { transform: rotate(360deg);}
+    100% { transform: rotate(360deg);}
+  }
+
+  @keyframes loader-inner {
+    0% { height: 0%;}
+    25% { height: 0%;}
+    50% { height: 100%;}
+    75% { height: 100%;}
+    100% { height: 0%;}
+  }
+  .flex{
+    display: flex;
+  }
+  .card{
+    border: none;
+  }
+  .card img{
+    border-top-right-radius: .25rem;
+    border-top-left-radius: .25rem;
+  }
+  ul{
+    padding: 0 !important;
+  }
+</style>
+  <style>
+    @media(max-width: 992px){
+                .counter{
+                  display: none;
+                }
+              }
+  </style>
+</head>
+
+<body style="background-color:#eee" dir="rtl">
+<section class="header"  >
+
+
+    <div class="row justify-content-between align-items-center text-center m-auto " style="width: 90%;" >
+
+              <div class="logo col-8" style="margin-top: -10px;text-align: right;" >
+                <a routerLink="/" style="font-weight: bold !important" >فاستر</a>
+              </div>
+
+              <div  class="counter" style="width: auto;text-align: left;">
+                <app-counter style="width: auto;"></app-counter>
+              </div>
+
+              <div class="mobile col-3 p-0 col-2" style="text-align: left !important;">
+                  <i class="fas fa-bars"></i>
+              </div>
+
+
+              <div  class="menu text-center " style="height: auto !important;">
+                <nav>
+                  <ul>
+                      <li><a routerLink="/computers/"> كمبيوتر ولابتوب</a></li>
+                      <li><a routerLink="/mobiles/"> موبايلات</a></li>
+                      <li><a routerLink="/clothes/"> ملابس</a></li>
+                      <li><a routerLink="/shoes/"> احذيه</a></li>
+                      <li><a routerLink="/electronics/"> الكترونيات</a></li>
+                      <li ><a routerLink="/car/"> سيارات وماكينات</a></li>
+                      <li><a routerLink="/foods/"> طعام وسوبر ماركت</a></li>
+                      <li><a routerLink="/books/"> كتب</a></li>
+                      <li><a routerLink="/beauty/"> مستحضرات تجميل والعطور</a></li>
+                      <li ><a routerLink="/accessories/"> الاكسسورات</a></li>
+                      <li style="border: none;"><a routerLink="/toys/"> العاب</a></li>
+
+                  </ul>
+                </nav>
+              </div>
+
+    </div>
+
+</section>
+
+<router-outlet>
+
+</router-outlet>
+
+
+<div class="talo">
+  <a class="top">
+    <i class="fas fa-chevron-circle-up"></i>
+  </a>
+</div>
+
+<div class="main-menu">
+
+<div class="menu-link">
+      <div class="menu-items">
+          <a routerLink="/">الصفحه الرئيسيه</a>
+      </div>
+      <div class="menu-items">
+          <a routerLink="/computers/">كمبيوتر ولابتوب</a>
+      </div>
+      <div class="menu-items">
+          <a routerLink="/mobiles/">موبايلات</a>
+      </div>
+      <div class="menu-items">
+          <a routerLink="/foods/">طعام وسوبر ماركت</a>
+      </div>
+      <div class="menu-items">
+          <a routerLink="/clothes/">ملابس</a>
+      </div>
+      <div class="menu-items">
+          <a routerLink="/shoes/">احذيه</a>
+      </div>
+      <div class="menu-items">
+          <a routerLink="/electronics/">الكترونيات</a>
+      </div>
+      <div class="menu-items">
+        <a routerLink="/car/">سيارات وماكينات</a>
+    </div>
+      <div class="menu-items">
+        <a routerLink="/books/">كتب</a>
+      </div>
+      <div class="menu-items">
+        <a routerLink="/toys/">العاب</a>
+      </div>
+      <div class="menu-items">
+        <a routerLink="/beauty/">مستحضرات التجميل والعطور</a>
+      </div>
+      <div class="menu-items">
+        <a routerLink="/accessories/">الاكسسورات</a>
+      </div>
+      <div class="menu-items" style="width: auto !important;">
+          <app-counter></app-counter>
+      </div>
+
+  </div>
+
+</div>
+
+<section class="mt-4 py-5" style="background-color: #fff;">
+  <div class=" container menu-footer row p-5 m-auto align-items-stretch justify-content-between text-center" style="padding: 100px;width:90%;">
+    <div class=" ">
+      <ul>
+        <li><a routerLink="/car">سيارات ومعدات نقل</a></li>
+        <li><a routerLink="/clothes/">الملابس</a></li>
+        <li><a routerLink="/shoes/">الاحذيه</a></li>
+        <li><a routerLink="/foods">الطعام وسوبر ماركت</a></li>
+        <li><a routerLink="/books/">الكتب</a></li>
+        <li><a routerLink="/computers/">الكمبيوتر</a></li>
+      </ul>
+    </div>
+    <div class=" ">
+      <ul>
+        <li><a routerLink="/electronics/">الاجهزه الكهربائيه</a></li>
+        <li><a routerLink="/electronics/">الالكترونيات</a></li>
+        <li><a routerLink="/mobiles/">الموبايل</a></li>
+        <li><a routerLink="/beauty/">مستحضرات التجميل والعطور</a></li>
+        <li><a routerLink="/accessories/">الاكسسورات والمستلزمات الشخصيه</a></li>
+        <li><a routerLink="/toys/">العاب</a></li>
+      </ul>
+    </div>
+    <div class=" col-sm-12">
+      <ul>
+        <li><a routerLink="/about">اعرف اكتر عننا</a></li>
+        <li><a routerLink="/contact">للتواصل معنا</a></li>
+        <li><a routerLink="/private">سياسة الخصوصيه</a></li>
+        <li><a routerLink="/sill">شروط البيع معانا</a></li>
+        <li><a routerLink="/sill">للبيع معانا</a></li>
+        <li><a routerLink="/recover">سياسة الاسترجاع</a></li>
+      </ul>
+    </div>
+
+
+  </div>
+</section>
+
+<app-social>
+</app-social>
+
+<footer>
+  كل الحقوق محفوظه لشركة فاستر للتجارة الحره &copy; 2020
+</footer>
+
+
+</body>
+
+

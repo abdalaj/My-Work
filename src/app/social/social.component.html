@@ -1,0 +1,26 @@
+<section class="social row m-auto text-center " style="background-color: #fff;">
+  <div class="col-12 text-center mt-5">
+    <ul *ngFor="let item of data">
+      <li style="display: inline-block;margin-left: 25px;">
+        <a href="{{ item.facebook }}" target="_blank" style="font-size: 35px;color: #3b5998">
+          <i class="fab fa-facebook"></i>
+        </a>
+      </li>
+      <li style="display: inline-block;margin-left: 25px;">
+        <a href="{{ item.instagrame }}" target="_blank" style="font-size: 35px;color: #bc2a8d">
+          <i class="fab fa-instagram-square"></i>
+        </a>
+      </li>
+      <li style="display: inline-block;margin-left: 25px;">
+        <a href="{{ item.youtube }}" target="_blank" style="font-size: 35px;color: #c4302b">
+          <i class="fab fa-youtube"></i>
+        </a>
+      </li>
+      <li style="display: inline-block;margin-left: 10px;">
+        <a href="{{ item.twitter }}" target="_blank" style="font-size: 35px;color: #26a7de">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+</section>

@@ -1,0 +1,36 @@
+:host >>> ngx-skeleton-loader .loader{
+  height: 300px;
+  width: 14%;
+  margin:5px 10px;
+}
+@media(max-width:992px){
+  :host >>> ngx-skeleton-loader .loader{
+    height: 300px;
+    width: 20%;
+    margin:5px 10px;
+  }
+}
+@media(max-width:768px){
+  :host >>> ngx-skeleton-loader .loader{
+    height: 300px;
+    width: 26%;
+    margin:5px 10px;
+
+  }
+}
+@media(max-width:576px){
+  :host >>> ngx-skeleton-loader .loader{
+    height: 300px;
+    width: 42.5%;
+    margin:5px 10px;
+
+  }
+}
+@media(max-width:576px){
+  :host >>> ngx-skeleton-loader .loader{
+    height: 300px;
+    width: 98%;
+    margin:auto 10px;
+
+  }
+}
