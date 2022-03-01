@@ -10,5 +10,8 @@ namespace Entites.Models
     {
         public int Stadium_id { get; set; }
         public int Feature_id { get; set; }
+
+        public Stadium Stadium { get; set; }
+        public Features Feature { get; set; }
     }
 }

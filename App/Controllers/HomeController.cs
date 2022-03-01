@@ -1,4 +1,5 @@
 ﻿using App.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -18,6 +19,7 @@ namespace App.Controllers
             _logger = logger;
         }
 
+        [Authorize(Policy = "SuperAdminRole")]
         public IActionResult Index()
         {
             return View();

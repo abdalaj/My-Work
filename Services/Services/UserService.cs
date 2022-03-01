@@ -1,4 +1,5 @@
 ﻿using Entites.Models;
+using Interfaces.Helper;
 using Interfaces.Interfaces;
 using Interfaces.ViewModels.UserVM;
 using Microsoft.AspNetCore.Identity;
@@ -38,21 +39,44 @@ namespace Services.Services
         {
             if (model.Id != null)
             {
-                var userName = model.Name + _repoCore.GenerateRandomCodeAsNumber();
-
                 var user = await _userManager.FindByIdAsync(model.Id);
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var user_name = String.Concat(model.Name.Where(c => !Char.IsWhiteSpace(c))) + _repoCore.GenerateRandomCodeAsNumber();
 
-                var resetPassword =  await _userManager.ResetPasswordAsync(user, token, model.Password);
-
-                if (!resetPassword.Succeeded)
+                if (model.Images == null)
                 {
-                    return null;
+                    model.Images = new List<string> { user.Image };
                 }
 
-                user.Name = model.Name;
-                user.UserName = userName;
-                user.NormalizedUserName = userName.ToUpper();
+                if (model.Phone != null) // if phone not null it's mean it's update profile
+                {
+                    user.Name = model.Name;
+                    user.PhoneNumber = model.Phone;
+
+                    foreach (var item in model.Images)
+                    {
+                        user.Image = item;
+                    }
+                }
+                else // else it's complete data after verfiy confirm code 
+                {
+                    var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+                    var reset_password = await _userManager.ResetPasswordAsync(user, token, model.Password);
+
+                    if (!reset_password.Succeeded)
+                    {
+                        return null;
+                    }
+
+                    user.Name = model.Name;
+                    user.UserName = user_name;
+                    user.NormalizedUserName = user_name.ToUpper();
+
+                    foreach (var item in model.Images)
+                    {
+                        user.Image = item;
+                    }
+                }
 
                 await _repoCore.SaveAll();
                 return user;
@@ -63,15 +87,18 @@ namespace Services.Services
                 var user = new Users
                 {
                     Name = "default user",
-                    UserName = "defaultUser_8000",
                     PhoneNumber = model.Phone,
-                    Country_code = model.Country_code
+                    Country_code = model.Country_code,
+                    Image = string.Empty
                 };
+
+                user.UserName = String.Concat(user.Name.Where(c => !Char.IsWhiteSpace(c))) + _repoCore.GenerateRandomCodeAsNumber();
 
                 var result = await _userManager.CreateAsync(user, "User@8000");
 
                 if (result.Succeeded)
                 {
+                    await _userManager.AddToRoleAsync(user, model.Role);
                     return user;
                 }
 
@@ -79,31 +106,36 @@ namespace Services.Services
             }
         }
 
-        public async Task<bool> SaveCode(SaveCodeViewModel model)
-        {
+        public async Task<bool> SaveConfirmCode(SaveCodeViewModel model)
+        { 
             if (!string.IsNullOrEmpty(model.Phone))
             {
-                var code = new ConfirmCode
+                if (await IsPhoneExistBefore(model.Phone))
+                {
+                    return false;
+                }
+
+                var confirm_code = new ConfirmCode
                 {
                     Phone = model.Phone,
-                    Code = model.Code,
+                    Code = model.Generated_code,
                     Country_code = model.Country_code
                 };
 
-                _repoCore.Add(code);
+                _repoCore.Add(confirm_code);
                 await _repoCore.SaveAll();
 
                 return true;
             }
 
             return false;
-        }
+        } 
 
-        public string GetCodeByPhone(string phone)
+        public string GetConfirmCodeByPhone(string phone)
         {
-            var code = _context.ConfirmCode.FirstOrDefault(c => c.Phone == phone).Code;
+            var confirm_code = _context.ConfirmCode.FirstOrDefault(c => c.Phone == phone).Code;
 
-            return code;
+            return confirm_code;
         }
 
         public JwtSecurityToken GenerateToken(IList<string> usersRole, Users user)
@@ -123,8 +155,8 @@ namespace Services.Services
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:SecretKey"]));
 
             var newToken = new JwtSecurityToken(
-                issuer: "",
-                audience: "",
+                issuer: _configuration["JWT:ValidIssuer"],
+                audience: _configuration["JWT:ValidAudience"],
                 expires: DateTime.Now.AddYears(1),
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256));
@@ -149,16 +181,18 @@ namespace Services.Services
             return confirmCode;
         }
 
-        public async Task<bool> IsPhoneExistInConfirmCode(string phone)
-        {
-            var isPhoneExist = await _context.ConfirmCode.AnyAsync(c => c.Phone == phone);
-
-            return isPhoneExist;
-        }
-
         public async Task<LoginReturnViewModel> Login(LoginViewModel model)
         {
-            var user = _context.Users.FirstOrDefault(u => u.PhoneNumber == model.Phone);
+            var user = new Users();
+
+            if (!string.IsNullOrEmpty(model.Name))
+            {
+                user = _context.Users.FirstOrDefault(u => u.Name == model.Name);
+            }
+            else
+            {
+                user = _context.Users.FirstOrDefault(u => u.PhoneNumber == model.Phone);
+            }
 
             if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
@@ -168,11 +202,32 @@ namespace Services.Services
 
                 return new LoginReturnViewModel
                 {
-                    Token = GenerateToken(roles, user)
+                    Token = GenerateToken(roles, user),
+                    Roles = roles
                 };
             }
 
             return null;
+        }
+
+        public async Task<bool> IsPhoneExistBefore(string phone)
+        {
+            var isPhoneInDb = await _context.ConfirmCode.AnyAsync(c => c.Phone == phone);
+
+            return isPhoneInDb;
+        }
+
+        public bool IsConfirmCodeIsRight(string confirm_code, string phone)
+        {
+            var confirm_code_by_phone = _context.ConfirmCode
+                .FirstOrDefault(c => c.Phone == phone).Code;
+
+            if (confirm_code_by_phone == confirm_code)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

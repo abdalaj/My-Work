@@ -19,6 +19,55 @@ namespace App.Migrations
                 .HasAnnotation("ProductVersion", "5.0.7")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("Entites.Models.ApplicationIntro", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Description_ar")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description_en")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ApplicationIntro");
+                });
+
+            modelBuilder.Entity("Entites.Models.City", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Government_id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name_ar")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name_en")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Government_id");
+
+                    b.ToTable("City");
+                });
+
             modelBuilder.Entity("Entites.Models.ConfirmCode", b =>
                 {
                     b.Property<int>("Id")
@@ -33,11 +82,294 @@ namespace App.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Phone")
+                        .IsUnique()
+                        .HasFilter("[Phone] IS NOT NULL");
+
+                    b.ToTable("ConfirmCode");
+                });
+
+            modelBuilder.Entity("Entites.Models.Contact", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("User_id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("User_id");
+
+                    b.ToTable("Contacts");
+                });
+
+            modelBuilder.Entity("Entites.Models.Features", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name_ar")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name_er")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("ConfirmCode");
+                    b.ToTable("Features");
+                });
+
+            modelBuilder.Entity("Entites.Models.FeaturesOfStadium", b =>
+                {
+                    b.Property<int>("Stadium_id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Feature_id")
+                        .HasColumnType("int");
+
+                    b.HasKey("Stadium_id", "Feature_id");
+
+                    b.HasIndex("Feature_id");
+
+                    b.ToTable("FeaturesOfStadium");
+                });
+
+            modelBuilder.Entity("Entites.Models.Government", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name_ar")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name_en")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Governments");
+                });
+
+            modelBuilder.Entity("Entites.Models.Rate", b =>
+                {
+                    b.Property<int>("Stadium_id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("User_id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.HasKey("Stadium_id", "User_id");
+
+                    b.HasIndex("User_id");
+
+                    b.ToTable("Ratings");
+                });
+
+            modelBuilder.Entity("Entites.Models.ReasonsCancel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Reason_ar")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Reason_en")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ReasonsCancels");
+                });
+
+            modelBuilder.Entity("Entites.Models.Reservation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Reason_canceled")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Reservation_state_id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Stadium_id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Time")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("User_id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Reservation_state_id");
+
+                    b.HasIndex("Stadium_id");
+
+                    b.HasIndex("User_id");
+
+                    b.ToTable("Reservation");
+                });
+
+            modelBuilder.Entity("Entites.Models.ReservationStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("State")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ReservationStatuses");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            State = "Pending"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            State = "Canceled"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            State = "Finished"
+                        });
+                });
+
+            modelBuilder.Entity("Entites.Models.Stadium", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("City_id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Latitude")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Longtiude")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Name_ar")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name_en")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price_per_hour")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("User_id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("City_id");
+
+                    b.HasIndex("User_id");
+
+                    b.ToTable("Stadium");
+                });
+
+            modelBuilder.Entity("Entites.Models.StadiumImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Stadium_id")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Stadium_id");
+
+                    b.ToTable("StadiumImages");
+                });
+
+            modelBuilder.Entity("Entites.Models.TimesOfplay", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Day_code")
+                        .HasColumnType("int");
+
+                    b.Property<string>("From")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Stadium_id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("To")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Stadium_id");
+
+                    b.ToTable("TimesOfplays");
                 });
 
             modelBuilder.Entity("Entites.Models.Users", b =>
@@ -61,6 +393,9 @@ namespace App.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Image")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -242,6 +577,128 @@ namespace App.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("Entites.Models.City", b =>
+                {
+                    b.HasOne("Entites.Models.Government", "Government")
+                        .WithMany("Cities")
+                        .HasForeignKey("Government_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Government");
+                });
+
+            modelBuilder.Entity("Entites.Models.Contact", b =>
+                {
+                    b.HasOne("Entites.Models.Users", "Users")
+                        .WithMany("Contacts")
+                        .HasForeignKey("User_id");
+
+                    b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("Entites.Models.FeaturesOfStadium", b =>
+                {
+                    b.HasOne("Entites.Models.Features", "Feature")
+                        .WithMany("Features_of_stadium")
+                        .HasForeignKey("Feature_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Entites.Models.Stadium", "Stadium")
+                        .WithMany("Features_of_stadium")
+                        .HasForeignKey("Stadium_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Feature");
+
+                    b.Navigation("Stadium");
+                });
+
+            modelBuilder.Entity("Entites.Models.Rate", b =>
+                {
+                    b.HasOne("Entites.Models.Stadium", "Stadium")
+                        .WithMany("Ratings")
+                        .HasForeignKey("Stadium_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Entites.Models.Users", "Users")
+                        .WithMany("Ratings")
+                        .HasForeignKey("User_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Stadium");
+
+                    b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("Entites.Models.Reservation", b =>
+                {
+                    b.HasOne("Entites.Models.ReservationStatus", "ReservationStatus")
+                        .WithMany("Reservations")
+                        .HasForeignKey("Reservation_state_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Entites.Models.Stadium", "Stadium")
+                        .WithMany("Reservation")
+                        .HasForeignKey("Stadium_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Entites.Models.Users", "Users")
+                        .WithMany("Reservations")
+                        .HasForeignKey("User_id");
+
+                    b.Navigation("ReservationStatus");
+
+                    b.Navigation("Stadium");
+
+                    b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("Entites.Models.Stadium", b =>
+                {
+                    b.HasOne("Entites.Models.City", "City")
+                        .WithMany()
+                        .HasForeignKey("City_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Entites.Models.Users", "Users")
+                        .WithMany("Stadiums")
+                        .HasForeignKey("User_id");
+
+                    b.Navigation("City");
+
+                    b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("Entites.Models.StadiumImage", b =>
+                {
+                    b.HasOne("Entites.Models.Stadium", "Stadium")
+                        .WithMany("Stadium_images")
+                        .HasForeignKey("Stadium_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Stadium");
+                });
+
+            modelBuilder.Entity("Entites.Models.TimesOfplay", b =>
+                {
+                    b.HasOne("Entites.Models.Stadium", "Stadium")
+                        .WithMany("Times_of_plays")
+                        .HasForeignKey("Stadium_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Stadium");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -291,6 +748,45 @@ namespace App.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Entites.Models.Features", b =>
+                {
+                    b.Navigation("Features_of_stadium");
+                });
+
+            modelBuilder.Entity("Entites.Models.Government", b =>
+                {
+                    b.Navigation("Cities");
+                });
+
+            modelBuilder.Entity("Entites.Models.ReservationStatus", b =>
+                {
+                    b.Navigation("Reservations");
+                });
+
+            modelBuilder.Entity("Entites.Models.Stadium", b =>
+                {
+                    b.Navigation("Features_of_stadium");
+
+                    b.Navigation("Ratings");
+
+                    b.Navigation("Reservation");
+
+                    b.Navigation("Stadium_images");
+
+                    b.Navigation("Times_of_plays");
+                });
+
+            modelBuilder.Entity("Entites.Models.Users", b =>
+                {
+                    b.Navigation("Contacts");
+
+                    b.Navigation("Ratings");
+
+                    b.Navigation("Reservations");
+
+                    b.Navigation("Stadiums");
                 });
 #pragma warning restore 612, 618
         }

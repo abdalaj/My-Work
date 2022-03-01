@@ -3,6 +3,7 @@ using Interfaces.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ using Services.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -34,6 +36,11 @@ namespace App
         {
             services.AddControllersWithViews();
 
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromDays(20);
+            });
+
             services.AddDbContext<AppDbContext>(op => 
                 op.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("App")));
 
@@ -52,17 +59,36 @@ namespace App
                options.SaveToken = true;
                options.TokenValidationParameters = new TokenValidationParameters()
                {
-                   ValidateIssuer = false,
-                   ValidateAudience = false,
+                   ValidateIssuer = true,
+                   ValidateAudience = true,
+                   ValidAudience = Configuration["JWT:ValidAudience"],
+                   ValidIssuer = Configuration["JWT:ValidIssuer"],
                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:SecretKey"]))
                };
            });
 
+            services.AddAuthorization(op => op.AddPolicy("UserRole",
+                o => o.RequireRole("User").RequireAuthenticatedUser()));
+
+            services.AddAuthorization(op => op.AddPolicy("AdminRole",
+                o => o.RequireRole("Admin").RequireAuthenticatedUser()));
+
+            services.AddAuthorization(op => op.AddPolicy("SuperAdminRole",
+                o => o.RequireRole("SuberAdmin").RequireAuthenticatedUser()));
+
             services.AddScoped<IUser, UserService>();
             services.AddScoped<ICoreBase, CoreBaseService>();
             services.AddScoped<ISms, SmsService>();
-
-           
+            services.AddScoped<IStadium, StadiumService>();
+            services.AddScoped<IGovernment, GovernmentService>();
+            services.AddScoped<ITimesOfPlay, TimesOfPlayService>();
+            services.AddScoped<ICity, CityService>();
+            services.AddScoped<IFeature, FeatureService>();
+            services.AddScoped<IReservation, ReservationService>();
+            services.AddScoped<IContact, ContactService>();
+            services.AddScoped<IReasone, ReasoneService>();
+            services.AddScoped<IApplicationIntro, ApplicationIntroService>();
+            services.AddScoped<IRating, RatingService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -81,18 +107,42 @@ namespace App
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-
             app.UseRouting();
 
-            app.UseAuthorization();
-            app.UseAuthentication();
+            app.UseSession();
 
+            app.Use(async (context, next) =>
+            {
+                var JWToken = context.Session.GetString("JWToken");
+                if (!string.IsNullOrEmpty(JWToken))
+                {
+                    context.Request.Headers.Add("Authorization", "Bearer " + JWToken);
+                }
+
+                await next(); 
+            });
+
+            app.UseStatusCodePages(context => {
+                var request = context.HttpContext.Request;
+                var response = context.HttpContext.Response;
+
+                if (response.StatusCode == (int)HttpStatusCode.Unauthorized)
+                {
+                    response.Redirect("/User/login");
+                }
+
+                return Task.CompletedTask;
+            });
+
+            app.UseAuthentication();
+          
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=User}/{action=Login}/{id?}");
             });
         }
     }

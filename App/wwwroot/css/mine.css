@@ -1,0 +1,28 @@
+﻿.search-input-select-box {
+    width: 100%;
+    padding: 10px;
+    border-radius: 27px;
+    border: 1px solid #ccc;
+    color: #7e7e7e;
+}
+
+.deznav.show {
+    left : 0;
+}
+
+table td {
+    padding-top: 18px !important;
+    padding-bottom: 18px !important;
+}
+
+button[type=submit] {
+    width : 100% ;
+}
+
+.alert-danger {
+    width : 100% !important;
+}
+
+.footer .copyright {
+    background : #fff !important;
+}

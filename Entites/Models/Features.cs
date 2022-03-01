@@ -11,6 +11,14 @@ namespace Entites.Models
     {
         [Key]
         public int Id { get; set; }
-        public string Feature { get; set; }
+
+        [Required]
+        public string Name_ar { get; set; }
+
+        [Required]
+        public string Name_er { get; set; }
+
+        public ICollection<FeaturesOfStadium> Features_of_stadium { get; set; }
+
     }
 }

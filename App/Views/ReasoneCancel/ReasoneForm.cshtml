@@ -1,0 +1,81 @@
+﻿@model SaveReasoneViewModel
+@{
+    ViewData["Title"] = "ReasoneForm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<div class="row page-titles mx-0">
+    <div class="col-sm-6 p-md-0">
+        <div class="welcome-text">
+            <h4>Hi, welcome back!</h4>
+            <p class="mb-0">Validation</p>
+        </div>
+    </div>
+    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0)">Form</a></li>
+            <li class="breadcrumb-item active">
+                @if (Model.Id > 0)
+                {<a href="javascript:void(0)">Update Future</a> }
+                else
+                { <a href="javascript:void(0)">Add Future</a>}
+            </li>
+        </ol>
+    </div>
+</div>
+<!-- row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                @if (Model.Id > 0)
+                {<h4 class="card-title">Update Reasone</h4> }
+                else
+                { <h4 class="card-title">Add Reasone</h4>}
+            </div>
+            <div class="card-body">
+                <div class="form-validation">
+                    <form class="form-valide" asp-action="Save">
+                        <div class="row">
+                            <div class="col-xl-12">
+
+                                <div class="form-group row">
+                                    <label class="col-lg-3 col-form-label" for="val-username">
+                                        English reason
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="col-lg-9">
+                                        @if (Model.Id > 0)
+                                        {<input type="hidden" asp-for="Id" />}
+                                        <input type="text" asp-for="Reasone_en" class="form-control" placeholder="Enter reason..">
+                                    </div>
+                                    @Html.ValidationMessageFor(c => c.Reasone_en, "", new { @class = "text-danger" })
+                                </div>
+
+
+                                <div class="form-group row">
+                                    <label class="col-lg-3 col-form-label" for="val-username">
+                                        Arabic reason
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="col-lg-9">
+                                        <input type="text" asp-for="Reasone_ar" class="form-control" placeholder="Enter reason..">
+                                    </div>
+                                    @Html.ValidationMessageFor(c => c.Reasone_ar, "", new { @class = "text-danger" })
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-lg-12 ml-auto">
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

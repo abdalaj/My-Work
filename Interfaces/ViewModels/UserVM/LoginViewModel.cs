@@ -10,6 +10,8 @@ namespace Interfaces.ViewModels.UserVM
     {
         public string Country_code { get; set; }
         public string Phone { get; set; }
+        public string Name { get; set; }
         public string Password { get; set; }
+        public string Error { get; set; } = string.Empty;
     }
 }

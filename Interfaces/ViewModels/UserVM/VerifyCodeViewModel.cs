@@ -10,6 +10,6 @@ namespace Interfaces.ViewModels.UserVM
     {
         public string Country_code { get; set; }
         public string Phone { get; set; }
-        public string Code { get; set; }
+        public string Generated_code { get; set; }
     }
 }

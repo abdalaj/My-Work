@@ -14,5 +14,7 @@ namespace Interfaces.ViewModels.UserVM
         public string Password_confirm { get; set; }
         public string Country_code { get; set; }
         public string Phone { get; set; }
+        public string Role { get; set; }
+        public List<string> Images { get; set; }
     }
 }

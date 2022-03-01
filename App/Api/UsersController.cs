@@ -1,6 +1,10 @@
 ﻿using Entites.Models;
+using Interfaces.Helper;
 using Interfaces.Interfaces;
+using Interfaces.ViewModels.PushNotificationVM;
 using Interfaces.ViewModels.UserVM;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +12,7 @@ using Services.Model;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -24,28 +29,30 @@ namespace App.Api
         private RoleManager<IdentityRole> _roleManager;
         private UserManager<Users> _userManager;
         private AppDbContext _context;
+        private IWebHostEnvironment _webHost;
         public UsersController(IUser repo,
             ICoreBase repoCore,
             ISms repoSms,
             RoleManager<IdentityRole> roleManager,
             UserManager<Users> userManager,
-            AppDbContext context)
+            AppDbContext context,
+            IWebHostEnvironment webHost)
         {
             _repo = repo;
             _repoCore = repoCore;
             _roleManager = roleManager;
             _userManager = userManager;
             _repoSms = repoSms;
-
+            _webHost = webHost;
             _context = context;
         }
 
-        [HttpPost("sendConfirmCode")]
+        [HttpPost("send-confirm-code")]
         public async Task<IActionResult> SendConfirmCode(SendConfirmCodeViewModel model)
         {
             try
             {
-                if (await _repo.IsPhoneExistInConfirmCode(model.Phone))
+                if (await _repo.IsPhoneExistBefore(model.Phone))
                 {
                     var confirmCode = await _repo.GetCofirmCodeByPhone(model.Phone);
 
@@ -55,14 +62,14 @@ namespace App.Api
                 }
                 else
                 {
-                    var code = _repoCore.GenerateRandomCodeAsNumber();
+                    var generated_code = _repoCore.GenerateRandomCodeAsNumber();
                     var phone = model.Country_code + model.Phone;
-                    //await _repoSms.SendMessage(phone, code);
+                    //await _repoSms.SendMessage(phone, generated_code);
 
-                    await _repo.SaveCode(new SaveCodeViewModel
+                    await _repo.SaveConfirmCode(new SaveCodeViewModel
                     {
                         Phone = model.Phone,
-                        Code = code,
+                        Generated_code = generated_code,
                         Country_code = model.Country_code
                     });
                 }
@@ -76,24 +83,15 @@ namespace App.Api
             }
         }
 
-        [HttpPost("verifyCodeForRegister")]
-        public async Task<IActionResult> VerifyCodeForRegister(VerifyCodeViewModel model)
+        [HttpPost("verify-code-for-register-user")]
+        public async Task<IActionResult> VerifyCodeForRegisterUser(VerifyCodeViewModel model)
         {
             try
             {
-                var code = _repo.GetCodeByPhone(model.Phone);
-
-                if (model.Code != code)
+                if (!_repo.IsConfirmCodeIsRight(model.Generated_code, model.Phone))
                 {
-                    return BadRequest(new { messageError = 3 }); //code is not correct
-
+                    return BadRequest(new { messageError = 55 }); // code not identity
                 }
-
-                var user =  await _repo.SaveUser(new RegisterViewModel
-                {
-                    Phone = model.Phone,
-                    Country_code = model.Country_code
-                });
 
                 if (_context.Roles.Count() == 0)
                 {
@@ -110,9 +108,27 @@ namespace App.Api
                     }
                 }
 
+                var user = await _repo.SaveUser(new RegisterViewModel
+                {
+                    Phone = model.Phone,
+                    Country_code = model.Country_code,
+                    Role = "User"
+                });
+
                 var role = new List<string> { "User" };
 
                 var token = _repo.GenerateToken(role, user);
+
+                var notify = new PushNotification();
+                var obj = new PushNotificationAttributeVM();
+
+                obj.Body = "code verified successed";
+
+                //string[] devicesIds = { user.DeviceToken };
+                //obj.DeviceIds = devicesIds;
+                //obj.Case = "3";
+                obj.Title = "you have a message";
+                notify.Push(obj);
 
                 return Ok(new { messageSuccess = 1 ,
                     token = new JwtSecurityTokenHandler().WriteToken(token)});
@@ -124,12 +140,62 @@ namespace App.Api
             }
         }
 
-        [HttpPost("updateInfo")]
-        public async Task<IActionResult> UpdateInfo(RegisterViewModel model)
+        [HttpPost("verify-code-for-register-admin")]
+        public async Task<IActionResult> VerifyCodeForRegisterAdmin(VerifyCodeViewModel model)
         {
             try
             {
-                if (string.IsNullOrEmpty(model.Name) || string.IsNullOrWhiteSpace(model.Name))
+                if (!_repo.IsConfirmCodeIsRight(model.Generated_code, model.Phone))
+                {
+                    return BadRequest(new { messageError = 55 }); // code not identity
+                }
+
+                if (_context.Roles.Count() == 0)
+                {
+                    var roles = new List<IdentityRole>
+                    {
+                        new IdentityRole { Name = "User", NormalizedName = "USER"},
+                        new IdentityRole { Name = "Admin", NormalizedName = "ADMIN"},
+                        new IdentityRole { Name = "SuberAdmin", NormalizedName = "SUBERADMIN"}
+                    };
+
+                    foreach (var item in roles)
+                    {
+                        await _roleManager.CreateAsync(item);
+                    }
+                }
+
+                var user = await _repo.SaveUser(new RegisterViewModel
+                {
+                    Phone = model.Phone,
+                    Country_code = model.Country_code,
+                    Role = "Admin"
+                });
+
+                var role = new List<string> { "Admin" };
+
+                var token = _repo.GenerateToken(role, user);
+
+                return Ok(new
+                {
+                    messageSuccess = 1,
+                    token = new JwtSecurityTokenHandler().WriteToken(token)
+                });
+
+            }
+            catch
+            {
+                return BadRequest(new { messageError = 4 }); //error while verifing
+            }
+        }
+
+        [Authorize]
+        [HttpPut("complete-data")]
+        public async Task<IActionResult> CompleteDate(RegisterViewModel model)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(model.Name))
                 {
                     return BadRequest(new { messageError = 7 }); // name must be fill
                 }
@@ -144,10 +210,23 @@ namespace App.Api
                     return BadRequest(new { messageError = 9 }); // password not match
                 }
 
-                model.Id = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-                var createUser = await _repo.SaveUser(model);
+                var fileName = new List<string>();
+                var root = Path.Combine(_webHost.WebRootPath, "upload");
 
-                if (createUser != null)
+                var upload = _repoCore.SaveMultiImage(root, model.Images, out fileName);
+
+                if (!upload)
+                {
+                    return BadRequest(new { messageError = 30 }); // upload failed
+                }
+
+
+                model.Id = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                model.Images = fileName;
+
+                var result = await _repo.SaveUser(model);
+
+                if (result != null)
                 {
                     return Ok(new { messageSuccess = 1 });
                 }
@@ -160,14 +239,61 @@ namespace App.Api
             }
         }
 
-        [HttpPost("verifyCodeForgetPassword")]
+        [Authorize]
+        [HttpPut("edit-profile")]
+        public async Task<IActionResult> EditProfile(RegisterViewModel model)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(model.Name))
+                {
+                    return BadRequest(new { messageError = 7 }); // name must be fill
+                }
+
+                if (string.IsNullOrEmpty(model.Phone))
+                {
+                    return BadRequest(new { messageError = 3 }); // phone must be fill
+                }
+
+                if (model.Images != null)
+                {
+                    var fileName = new List<string>();
+                    var root = Path.Combine(_webHost.WebRootPath, "upload");
+
+                    var upload = _repoCore.SaveMultiImage(root, model.Images, out fileName);
+
+                    if (!upload)
+                    {
+                        return BadRequest(new { messageError = 30 }); // upload failed
+                    }
+
+                    model.Images = fileName;
+                }
+
+                model.Id = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                var result = await _repo.SaveUser(model);
+
+                if (result != null)
+                {
+                    return Ok(new { messageSuccess = 1 });
+                }
+
+                return BadRequest(new { messageError = 39 }); // failed edit profile
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { messageError = 40 }); // error while editing profile
+            }
+        }
+
+        [HttpPost("verify-code-forget-password")]
         public IActionResult VerifyCodeForgetPassword(VerifyCodeViewModel model)
         {
             try
             {
-                var code = _repo.GetCodeByPhone(model.Phone);
+                var confirmed_code_saved = _repo.GetConfirmCodeByPhone(model.Phone); // to get code to compare
 
-                if (model.Code != code)
+                if (model.Generated_code != confirmed_code_saved)
                 {
                     return BadRequest(new { messageError = 3 }); //code is not correct
 
@@ -182,7 +308,7 @@ namespace App.Api
             }
         }
 
-        [HttpPost("resetPassword")]
+        [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
             try
@@ -215,7 +341,8 @@ namespace App.Api
             }
         }
 
-        [HttpPost("changePasword")]
+        [Authorize]
+        [HttpPost("change-pasword")]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
             try
@@ -236,9 +363,9 @@ namespace App.Api
                 }
 
                 var user = await _userManager.FindByIdAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-                var checkPassword = await _userManager.CheckPasswordAsync(user, model.Old_password);
+                var check_password = await _userManager.CheckPasswordAsync(user, model.Old_password);
 
-                if (!checkPassword)
+                if (!check_password)
                 {
                     return BadRequest(new { messageError = 13 }); // password is wrong
                 }
@@ -251,9 +378,9 @@ namespace App.Api
                     return BadRequest(new { messageError = 11 }); // week password
                 }
 
-                var userRoles = await _userManager.GetRolesAsync(user);
+                var user_roles = await _userManager.GetRolesAsync(user);
 
-                JwtSecurityToken newToken = _repo.GenerateToken(userRoles.ToList(), user);
+                JwtSecurityToken newToken = _repo.GenerateToken(user_roles.ToList(), user);
 
                 return Ok(new { messageSuccess = 1 });
             }
@@ -268,19 +395,27 @@ namespace App.Api
         {
             try
             {
-                var loginResult = await _repo.Login(model);
+                if (string.IsNullOrEmpty(model.Phone))
+                {
+                    return BadRequest(new { messageError = 3 }); // phone must be fill
+                }
 
-                if (loginResult == null)
+                var result = await _repo.Login(model);
+
+                if (result == null)
                 {
                     return BadRequest(new { messageError = 15 }); // phone or password is wrong
                 }
 
-                return Ok(new { messageSuccess = 1, token = new JwtSecurityTokenHandler().WriteToken(loginResult.Token)});
+                return Ok(new { messageSuccess = 1,
+                    token = new JwtSecurityTokenHandler().WriteToken(result.Token),
+                    roles = result.Roles });
             }
             catch (Exception e)
             {
                 return BadRequest(new { messageError = 16 }); // error while login process
             }
         }
+
     }
 }

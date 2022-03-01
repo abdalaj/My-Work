@@ -10,5 +10,6 @@ namespace Interfaces.ViewModels.UserVM
     public class LoginReturnViewModel
     {
         public JwtSecurityToken Token { get; set; }
+        public IList<string> Roles { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Interfaces.Base;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,9 @@ namespace Interfaces.Interfaces
     {
         Task<bool> SaveAll();
         void Add<T>(T entity) where T : class;
+        void Delete<T>(T entity) where T : class;
         string GenerateRandomCodeAsNumber();
+        bool SaveMultiImage(string root, List<string> imgs, out List<string> fileName);
+        bool SaveSingleImage(string root, IFormFile img, out string fileName);
     }
 }
