@@ -28,9 +28,13 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.sass"
+              "src/custom-theme.scss",
+              "src/styles.sass",
+              "src/assets/styles/bootstrap.css"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/jquery-zoom/jquery.zoom.js"
+            ]
           },
           "configurations": {
             "production": {

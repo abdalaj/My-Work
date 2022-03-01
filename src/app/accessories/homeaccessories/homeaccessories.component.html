@@ -1,0 +1,88 @@
+
+<head>
+  <title>accessories</title>
+
+
+  <style>
+
+    body{
+      background-color: rgba(200, 200, 200, .1);
+      background-attachment: fixed;
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+
+    .flex{
+      display: flex;
+    }
+    .card{
+      border: none;
+      height: auto;
+    }
+    .card img{
+      border-top-right-radius: .25rem;
+      border-top-left-radius: .25rem;
+    }
+    @media(max-width:576px){
+      .container{
+        width: 90%;
+        margin:auto ;
+      }
+      .card{
+        border: none;
+        width: 49%;
+      }
+    }
+    @media(max-width:320px){
+      .container{
+        width: 90%;
+        margin:auto ;
+      }
+      .card{
+        border: none;
+        width: 100%;
+      }
+    }
+    a{
+      text-decoration: none;
+      color: #242f3f;
+      font-weight: normal;
+    }
+  </style>
+</head>
+<body >
+  <div class="container">
+    <div  class="row align-items-stretch justify-content-between mt-2 body">
+      <div class="col-12">
+        <input type="text" placeholder=" اكتب اللي بتدور عليه من هنا سواء بالاسم او العنوان او الحاله او السعر او اسم المحل او اسم المنتج او الوصف" class="form-control" [(ngModel)]="filterTerm">
+      </div>
+      <main class="col-12 align-items-stretch" >
+        <div class="row justify-content-between text-right align-items-stretch">
+          <div *ngFor="let item of data | paginate:{
+            itemsPerPage: 200, currentPage: page,totalItems:Total
+          } | filter:filterTerm" style=" position:relative; height: auto !important;" class="card align-items-stretch p-0 my-3 col-lg-2 col-lg-2 col-md-3 col-sm-4 "  >
+              <span class="label label--mini background-color--primary px-2 pb-3" style="position:absolute;top: 0;right: 0;">{{ item.stauts }}</span>
+              <img style="width: 100%;" src="https://dash.faster-eg.com/images/accessories/{{ item.imghome }}" class="card-img-top"  alt="{{ item.name }}">
+              <p class="label label--mini background-color--primary w-100 text-center" style="height: auto;">{{ item.address }}</p>
+              <div class="card-body">
+                <a routerLink="/accessories/item/{{ item.id }}/{{ item.describ }}/{{ item.price }}/{{ item.user_item_id }}"> <h5 class="card-title">{{ item.name }}</h5></a>
+                <a routerLink="/accessories/item/{{ item.id }}/{{ item.describ }}/{{ item.price }}/{{ item.user_item_id }}"><p class="card-text">{{ item.summry }}</p></a>
+                <div>
+                  <span style="text-decoration: line-through">{{ item.price }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                  <span>{{ item.discount }} </span>
+                </div>
+                <span class="label label--mini background-color--secondary" style="height: auto;">{{ item.saler }}</span>
+              </div>
+          </div>
+        </div>
+      </main>
+      <div class="aaa">
+      <ngx-skeleton-loader count="{{ totalcount }}" *ngIf="loader"></ngx-skeleton-loader>
+      </div>
+      <pagination-controls class="text-center mt-4" (pageChange)="page = $event"></pagination-controls>
+
+    </div>
+  </div>
+
+</body>
